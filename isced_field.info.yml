@@ -1,0 +1,5 @@
+name: 'ISCED-F field'
+type: module
+description: 'Stores information about ISCED-F fields of study.'
+package: 'EWP'
+core_version_requirement: ^10.3 || ^11

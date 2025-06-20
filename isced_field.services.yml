@@ -1,0 +1,4 @@
+services:
+  isced_f.manager:
+    class: Drupal\isced_field\IscedFManager
+    arguments: ['@config.factory']
