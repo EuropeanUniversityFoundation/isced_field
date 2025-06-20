@@ -85,13 +85,21 @@ final class IscedFItem extends FieldItemBase {
    * {@inheritdoc}
    */
   public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition): array {
-
-    // @DCG
-    // See /core/lib/Drupal/Core/TypedData/Plugin/DataType directory for
-    // available data types.
     $properties['value'] = DataDefinition::create('string')
-      ->setLabel(t('Text value'))
+      ->setLabel(new TranslatableMarkup('ISCED-F code'))
       ->setRequired(TRUE);
+
+    $properties['broad'] = DataDefinition::create('string')
+      ->setLabel(new TranslatableMarkup('Broad field'))
+      ->setComputed(TRUE);
+
+    $properties['narrow'] = DataDefinition::create('string')
+      ->setLabel(new TranslatableMarkup('Narrow field'))
+      ->setComputed(TRUE);
+
+    $properties['detailed'] = DataDefinition::create('string')
+      ->setLabel(new TranslatableMarkup('Detailed field'))
+      ->setComputed(TRUE);
 
     return $properties;
   }
@@ -104,12 +112,8 @@ final class IscedFItem extends FieldItemBase {
 
     $constraint_manager = $this->getTypedDataManager()->getValidationConstraintManager();
 
-    // @DCG Suppose our value must not be longer than 10 characters.
-    $options['value']['Length']['max'] = 10;
+    $options['value']['Regex']['pattern'] = '/^\d{2,4}$/';
 
-    // @DCG
-    // See /core/lib/Drupal/Core/Validation/Plugin/Validation/Constraint
-    // directory for available constraints.
     $constraints[] = $constraint_manager->create('ComplexData', $options);
     return $constraints;
   }
@@ -122,15 +126,32 @@ final class IscedFItem extends FieldItemBase {
     $columns = [
       'value' => [
         'type' => 'varchar',
+        'not null' => TRUE,
+        'description' => 'ISCED-F code.',
+        'length' => 4,
+      ],
+      'broad' => [
+        'type' => 'varchar',
         'not null' => FALSE,
-        'description' => 'Column description.',
-        'length' => 255,
+        'description' => 'Broad field.',
+        'length' => 2,
+      ],
+      'narrow' => [
+        'type' => 'varchar',
+        'not null' => FALSE,
+        'description' => 'Narrow field.',
+        'length' => 3,
+      ],
+      'detailed' => [
+        'type' => 'varchar',
+        'not null' => FALSE,
+        'description' => 'Detailed field.',
+        'length' => 4,
       ],
     ];
 
     $schema = [
       'columns' => $columns,
-      // @todo Add indexes here if necessary.
     ];
 
     return $schema;
