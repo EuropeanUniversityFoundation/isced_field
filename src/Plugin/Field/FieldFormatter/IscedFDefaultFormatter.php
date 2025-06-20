@@ -4,19 +4,22 @@ declare(strict_types=1);
 
 namespace Drupal\isced_field\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Field\Attribute\FieldFormatter;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Plugin implementation of the 'ISCED-F default' formatter.
- *
- * @FieldFormatter(
- *   id = "isced_f_default",
- *   label = @Translation("ISCED-F default"),
- *   field_types = {"string"},
- * )
  */
+#[FieldFormatter(
+  id: 'isced_f_default',
+  label: new TranslatableMarkup('ISCED-F default'),
+  field_types: [
+    'isced_f',
+  ],
+)]
 final class IscedFDefaultFormatter extends FormatterBase {
 
   /**

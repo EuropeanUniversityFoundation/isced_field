@@ -5,21 +5,22 @@ declare(strict_types=1);
 namespace Drupal\isced_field\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Field\Attribute\FieldWidget;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines the 'isced_f_select' field widget.
- *
- * @FieldWidget(
- *   id = "isced_f_select",
- *   label = @Translation("ISCED-F select list"),
- *   field_types = {"string"},
- * )
  */
+#[FieldWidget(
+  id: 'isced_f_select',
+  label: new TranslatableMarkup('Select list'),
+  field_types: ['isced_f'],
+)]
 final class IscedFSelectWidget extends WidgetBase implements ContainerFactoryPluginInterface {
 
   /**

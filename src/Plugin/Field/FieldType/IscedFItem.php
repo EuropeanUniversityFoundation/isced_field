@@ -5,23 +5,29 @@ declare(strict_types=1);
 namespace Drupal\isced_field\Plugin\Field\FieldType;
 
 use Drupal\Component\Utility\Random;
+use Drupal\Core\Field\Attribute\FieldType;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 
 /**
  * Defines the 'isced_f' field type.
- *
- * @FieldType(
- *   id = "isced_f",
- *   label = @Translation("ISCED-F field of study"),
- *   description = @Translation("Some description."),
- *   default_widget = "string_textfield",
- *   default_formatter = "string",
- * )
  */
+#[FieldType(
+  id: "isced_f",
+  module: "isced_field",
+  label: new TranslatableMarkup("ISCED-F field of study"),
+  description: [
+    new TranslatableMarkup("Stores an ISCED-F field of study as a string."),
+    new TranslatableMarkup("Calculates broad, narrow and detailed fields."),
+  ],
+  category: "selection_list",
+  default_widget: "isced_f_select",
+  default_formatter: "isced_f_default",
+)]
 final class IscedFItem extends FieldItemBase {
 
   /**
