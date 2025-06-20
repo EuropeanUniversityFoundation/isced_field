@@ -1,0 +1,28 @@
+{
+    "name": "euf/isced_field",
+    "type": "drupal-module",
+    "description": "Provides a field type to store ISCED-F 2013 fields of study.",
+    "keywords": [
+        "Drupal",
+        "Erasmus Without Paper",
+        "ISCED",
+        "Field type"
+    ],
+    "homepage": "https://github.com/EuropeanUniversityFoundation/isced_field",
+    "support": {
+        "issues": "https://github.com/EuropeanUniversityFoundation/isced_field/issues",
+        "source": "https://github.com/EuropeanUniversityFoundation/isced_field"
+    },
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Tiago Simões",
+            "email": "tiago.simoes@uni-foundation.eu",
+            "role": "Maintainer"
+        }
+    ],
+    "require": {
+        "euf/isced": "*"
+    },
+    "minimum-stability": "dev"
+}
