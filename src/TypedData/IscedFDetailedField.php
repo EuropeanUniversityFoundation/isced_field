@@ -14,9 +14,11 @@ class IscedFDetailedField extends TypedData {
    * {@inheritdoc}
    */
   public function getValue() {
-    $value = $this->getParent()->get('value')->getValue();
+    $field_item = $this->getParent();
+    /** @var \Drupal\Core\Field\FieldItemInterface $field_item */
+    $field_value = $field_item->get('value')->getValue();
     $iscedF = new IscedFieldsOfStudy();
-    return $iscedF->getDetailed($value);
+    return $iscedF->getDetailed($field_value);
   }
 
 }
