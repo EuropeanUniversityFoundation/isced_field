@@ -9,6 +9,7 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Isced\IscedFieldsOfStudy;
 
 /**
  * Plugin implementation of the 'ISCED-F default' formatter.
@@ -22,11 +23,13 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 )]
 final class IscedFDefaultFormatter extends FormatterBase {
 
+  const SEPARATOR = ' ';
+
   /**
    * {@inheritdoc}
    */
   public static function defaultSettings(): array {
-    $setting = ['foo' => 'bar'];
+    $setting = ['prefix' => TRUE];
     return $setting + parent::defaultSettings();
   }
 
@@ -34,10 +37,10 @@ final class IscedFDefaultFormatter extends FormatterBase {
    * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state): array {
-    $elements['foo'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Foo'),
-      '#default_value' => $this->getSetting('foo'),
+    $elements['prefix'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Prefix the study field label with its ISCED-F code'),
+      '#default_value' => $this->getSetting('prefix'),
     ];
     return $elements;
   }
@@ -47,7 +50,9 @@ final class IscedFDefaultFormatter extends FormatterBase {
    */
   public function settingsSummary(): array {
     return [
-      $this->t('Foo: @foo', ['@foo' => $this->getSetting('foo')]),
+      $this->t('Prefix the study field label with its ISCED-F code: @bool', [
+        '@bool' => $this->getSetting('prefix'),
+      ]),
     ];
   }
 
@@ -56,9 +61,15 @@ final class IscedFDefaultFormatter extends FormatterBase {
    */
   public function viewElements(FieldItemListInterface $items, $langcode): array {
     $element = [];
+    $iscedF = new IscedFieldsOfStudy();
+    $labeled_list = $iscedF->getLabeledList();
+
     foreach ($items as $delta => $item) {
+      $code = $item->value;
       $element[$delta] = [
-        '#markup' => $item->value,
+        '#markup' => ($this->getSetting('prefix'))
+          ? implode(self::SEPARATOR, [$code, $labeled_list[$code]])
+          : $labeled_list[$code],
       ];
     }
     return $element;

@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Drupal\isced_field\Plugin\Field\FieldWidget;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Field\Attribute\FieldWidget;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Isced\IscedFieldsOfStudy;
 
 /**
  * Defines the 'isced_f_select' field widget.
@@ -21,37 +19,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
   label: new TranslatableMarkup('Select list'),
   field_types: ['isced_f'],
 )]
-final class IscedFSelectWidget extends WidgetBase implements ContainerFactoryPluginInterface {
+final class IscedFSelectWidget extends WidgetBase {
 
-  /**
-   * Constructs the plugin instance.
-   */
-  public function __construct(
-    array $configuration,
-    $plugin_id,
-    $plugin_definition,
-    private readonly ConfigFactoryInterface $configFactory,
-  ) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): self {
-    return new self(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('config.factory'),
-    );
-  }
+  const SEPARATOR = ' ';
 
   /**
    * {@inheritdoc}
    */
   public static function defaultSettings(): array {
-    $setting = ['foo' => 'bar'];
+    $setting = ['allow_all_levels' => TRUE];
     return $setting + parent::defaultSettings();
   }
 
@@ -59,10 +35,10 @@ final class IscedFSelectWidget extends WidgetBase implements ContainerFactoryPlu
    * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state): array {
-    $element['foo'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Foo'),
-      '#default_value' => $this->getSetting('foo'),
+    $element['allow_all_levels'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Allow all levels of selection'),
+      '#default_value' => $this->getSetting('allow_all_levels'),
     ];
     return $element;
   }
@@ -72,7 +48,11 @@ final class IscedFSelectWidget extends WidgetBase implements ContainerFactoryPlu
    */
   public function settingsSummary(): array {
     return [
-      $this->t('Foo: @foo', ['@foo' => $this->getSetting('foo')]),
+      $this->t('Allow all levels of selection: @bool', [
+        '@bool' => $this->getSetting('allow_all_levels')
+          ? $this->t('Yes')
+          : $this->t('No'),
+      ]),
     ];
   }
 
@@ -80,8 +60,49 @@ final class IscedFSelectWidget extends WidgetBase implements ContainerFactoryPlu
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state): array {
+    $options = [];
+    $iscedF = new IscedFieldsOfStudy();
+    $labeled_list = $iscedF->getLabeledList();
+
+    if (!$this->getSetting('allow_all_levels')) {
+      $tree = $iscedF->getTree();
+
+      foreach ($tree as $broad => $subtree) {
+        $broad_label = implode(self::SEPARATOR, [
+          $broad,
+          $labeled_list[$broad],
+        ]);
+
+        $options[$broad_label] = [];
+
+        foreach ($subtree as $narrow => $subsubtree) {
+          $narrow_label = implode(self::SEPARATOR, [
+            $narrow,
+            $labeled_list[$narrow],
+          ]);
+
+          $options[$broad_label][$narrow_label] = [];
+
+          foreach ($subsubtree as $detailed => $value) {
+            $detailed_label = implode(self::SEPARATOR, [
+              $detailed,
+              $labeled_list[$detailed],
+            ]);
+
+            $options[$broad_label][$narrow_label][$detailed] = $detailed_label;
+          }
+        }
+      }
+    }
+    else {
+      foreach ($labeled_list as $key => $value) {
+        $options[$key] = implode(self::SEPARATOR, [$key, $value]);
+      }
+    }
+
     $element['value'] = $element + [
-      '#type' => 'textfield',
+      '#type' => 'select',
+      '#options' => $options,
       '#default_value' => $items[$delta]->value ?? NULL,
     ];
     return $element;

@@ -10,14 +10,14 @@ field.widget.settings.isced_f_select:
   type: mapping
   label: ISCED-F select list widget settings
   mapping:
-    foo:
-      type: string
-      label: Foo
+    allow_all_levels:
+      type: boolean
+      label: 'Allow all levels of selection'
 
 field.formatter.settings.isced_f_default:
   type: mapping
   label: ISCED-F default formatter settings
   mapping:
-    foo:
-      type: string
-      label: Foo
+    prefix:
+      type: boolean
+      label: 'Prefix the study field label with its ISCED-F code'
