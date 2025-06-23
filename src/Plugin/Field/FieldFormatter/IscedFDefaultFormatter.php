@@ -51,7 +51,9 @@ final class IscedFDefaultFormatter extends FormatterBase {
   public function settingsSummary(): array {
     return [
       $this->t('Prefix the study field label with its ISCED-F code: @bool', [
-        '@bool' => $this->getSetting('prefix'),
+        '@bool' => $this->getSetting('prefix')
+          ? $this->t('Yes')
+          : $this->t('No'),
       ]),
     ];
   }

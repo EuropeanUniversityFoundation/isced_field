@@ -81,7 +81,7 @@ final class IscedFSelectWidget extends WidgetBase {
             $labeled_list[$narrow],
           ]);
 
-          $options[$broad_label][$narrow_label] = [];
+          $options[$narrow_label] = [];
 
           foreach ($subsubtree as $detailed => $value) {
             $detailed_label = implode(self::SEPARATOR, [
@@ -89,7 +89,7 @@ final class IscedFSelectWidget extends WidgetBase {
               $labeled_list[$detailed],
             ]);
 
-            $options[$broad_label][$narrow_label][$detailed] = $detailed_label;
+            $options[$narrow_label][$detailed] = $detailed_label;
           }
         }
       }
