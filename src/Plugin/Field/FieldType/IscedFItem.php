@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Drupal\isced_field\Plugin\Field\FieldType;
 
-use Drupal\Component\Utility\Random;
 use Drupal\Core\Field\Attribute\FieldType;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
+use Isced\IscedFieldsOfStudy;
 
 /**
  * Defines the 'isced_f' field type.
@@ -33,47 +32,6 @@ final class IscedFItem extends FieldItemBase {
   /**
    * {@inheritdoc}
    */
-  public static function defaultStorageSettings(): array {
-    $settings = ['foo' => ''];
-    return $settings + parent::defaultStorageSettings();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data): array {
-    $element['foo'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Foo'),
-      '#default_value' => $this->getSetting('foo'),
-      '#disabled' => $has_data,
-    ];
-    return $element;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function defaultFieldSettings(): array {
-    $settings = ['bar' => ''];
-    return $settings + parent::defaultFieldSettings();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function fieldSettingsForm(array $form, FormStateInterface $form_state): array {
-    $element['bar'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Bar'),
-      '#default_value' => $this->getSetting('bar'),
-    ];
-    return $element;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function isEmpty(): bool {
     return match ($this->get('value')->getValue()) {
       NULL, '' => TRUE,
@@ -87,7 +45,8 @@ final class IscedFItem extends FieldItemBase {
   public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition): array {
     $properties['value'] = DataDefinition::create('string')
       ->setLabel(new TranslatableMarkup('ISCED-F code'))
-      ->setRequired(TRUE);
+      ->setRequired(TRUE)
+      ->addConstraint('ValidIscedF');
 
     $properties['broad'] = DataDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Broad field'))
@@ -110,9 +69,11 @@ final class IscedFItem extends FieldItemBase {
   public function getConstraints(): array {
     $constraints = parent::getConstraints();
 
-    $constraint_manager = $this->getTypedDataManager()->getValidationConstraintManager();
+    $constraint_manager = $this->getTypedDataManager()
+      ->getValidationConstraintManager();
 
     $options['value']['Regex']['pattern'] = '/^\d{2,4}$/';
+    $options['value']['ValidIscedF'] = [];
 
     $constraints[] = $constraint_manager->create('ComplexData', $options);
     return $constraints;
@@ -152,6 +113,7 @@ final class IscedFItem extends FieldItemBase {
 
     $schema = [
       'columns' => $columns,
+      'indexes' => ['value' => ['value']],
     ];
 
     return $schema;
@@ -161,8 +123,7 @@ final class IscedFItem extends FieldItemBase {
    * {@inheritdoc}
    */
   public static function generateSampleValue(FieldDefinitionInterface $field_definition): array {
-    $random = new Random();
-    $values['value'] = $random->word(mt_rand(1, 50));
+    $values['value'] = array_rand(IscedFieldsOfStudy::list(), 1);
     return $values;
   }
 
