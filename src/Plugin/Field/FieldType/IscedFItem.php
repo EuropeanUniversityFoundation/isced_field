@@ -50,15 +50,18 @@ final class IscedFItem extends FieldItemBase {
 
     $properties['broad'] = DataDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Broad field'))
-      ->setComputed(TRUE);
+      ->setComputed(TRUE)
+      ->setClass('\Drupal\isced_field\TypedData\IscedFBroadField');
 
     $properties['narrow'] = DataDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Narrow field'))
-      ->setComputed(TRUE);
+      ->setComputed(TRUE)
+      ->setClass('\Drupal\isced_field\TypedData\IscedFNarrowField');
 
     $properties['detailed'] = DataDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Detailed field'))
-      ->setComputed(TRUE);
+      ->setComputed(TRUE)
+      ->setClass('\Drupal\isced_field\TypedData\IscedFDetailedField');
 
     return $properties;
   }

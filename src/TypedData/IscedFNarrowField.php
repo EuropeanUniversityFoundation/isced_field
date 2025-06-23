@@ -11,6 +11,13 @@ use Isced\IscedFieldsOfStudy;
 class IscedFNarrowField extends TypedData {
 
   /**
+   * The value.
+   *
+   * @var mixed
+   */
+  protected $value;
+
+  /**
    * {@inheritdoc}
    */
   public function getValue() {
