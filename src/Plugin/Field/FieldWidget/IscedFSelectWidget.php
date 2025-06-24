@@ -103,6 +103,7 @@ final class IscedFSelectWidget extends WidgetBase {
     $element['value'] = $element + [
       '#type' => 'select',
       '#options' => $options,
+      '#empty_value' => '',
       '#default_value' => $items[$delta]->value ?? NULL,
     ];
     return $element;
