@@ -3,8 +3,11 @@ field.value.isced_f:
   label: Default value
   mapping:
     value:
-      type: label
+      type: string
       label: Value
+      constraints:
+        Regex:
+          pattern: '/^\d{2,4}$/'
 
 field.widget.settings.isced_f_select:
   type: mapping
