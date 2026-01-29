@@ -68,25 +68,31 @@ final class IscedFSelectWidget extends WidgetBase {
       $tree = $iscedF->getTree();
 
       foreach ($tree as $broad => $subtree) {
+        // phpcs:ignore Drupal.Semantics.FunctionT.NotLiteralString
+        $broad_translation = $this->t($labeled_list[$broad]);
         $broad_label = implode(self::SEPARATOR, [
           $broad,
-          $labeled_list[$broad],
+          $broad_translation,
         ]);
 
         $options[$broad_label] = [];
 
         foreach ($subtree as $narrow => $subsubtree) {
+          // phpcs:ignore Drupal.Semantics.FunctionT.NotLiteralString
+          $narrow_translation = $this->t($labeled_list[$narrow]);
           $narrow_label = implode(self::SEPARATOR, [
             $narrow,
-            $labeled_list[$narrow],
+            $narrow_translation,
           ]);
 
           $options[$narrow_label] = [];
 
           foreach ($subsubtree as $detailed => $value) {
+            // phpcs:ignore Drupal.Semantics.FunctionT.NotLiteralString
+            $detailed_translation = $this->t($labeled_list[$detailed]);
             $detailed_label = implode(self::SEPARATOR, [
               $detailed,
-              $labeled_list[$detailed],
+              $detailed_translation,
             ]);
 
             $options[$narrow_label][$detailed] = $detailed_label;

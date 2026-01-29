@@ -22,7 +22,8 @@
         }
     ],
     "require": {
-        "euf/isced": "*"
+        "euf/isced": "^0.1",
+        "gettext/gettext": "^5.7"
     },
     "minimum-stability": "dev"
 }
