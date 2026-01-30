@@ -24,3 +24,32 @@ field.formatter.settings.isced_f_default:
     prefix:
       type: boolean
       label: 'Prefix the study field label with its ISCED-F code'
+
+views.filter.isced:
+  type: views_filter
+  label: 'ISCED-F'
+  mapping:
+    operator:
+      type: string
+      label: 'Operator'
+    value:
+      type: sequence
+      constraints:
+        FullyValidatable: ~
+      label: 'Values'
+      sequence:
+        type: string
+        label: 'Value'
+    expose:
+      type: mapping
+      label: 'Expose'
+      mapping:
+        reduce:
+          type: boolean
+          label: 'Reduce'
+    group_info:
+      mapping:
+        group_items:
+          sequence:
+            type: views.filter.group_item.isced
+            label: 'Group item'
