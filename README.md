@@ -34,6 +34,22 @@ The available field formatters allow to print the ISCED-F code only or to render
 
 ISCED-F codes are validated against the official list, ported to this [PHP library](https://packagist.org/packages/euf/isced) and required in `composer.json`.
 
+## Translation
+
+To merge the module translations with the library translations, run `drush isced-merge`.
+
+_See `isced_field.info.yml` for the translation file pattern to use for your custom translations._
+
+## Views integration
+
+The module provides a Views filter plugin for the ISCED-F field type. It can be exposed to site users as a select list.
+
+The filtering follows a simple logic:
+
+- if the filter value is a broad field, all results with that broad field are displayed;
+- if the filter value is a narrow field **not already shown by a broad field filter value**, all results with that broad field are displayed;
+- if the filter value is a detailed field, the rule above applies to coverage by broad and narrow fields.
+
 ## ROADMAP
 
-  - Views integration
+  - [Datalist](https://www.drupal.org/project/datalist) integration

@@ -1,0 +1,6 @@
+services:
+  isced_field.merge:
+    class: Drupal\isced_field\TranslationMerge
+    arguments: ['@file_system']
+  Drupal\isced_field\TranslationMergeInterface:
+    alias: isced_field.merge

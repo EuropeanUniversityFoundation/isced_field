@@ -1,5 +1,11 @@
 name: 'ISCED-F field'
 type: module
 description: 'Stores information about ISCED-F fields of study.'
-package: 'EWP'
-core_version_requirement: ^10.3 || ^11
+package: 'Field types'
+core_version_requirement: ^10.5 || ^11
+dependencies:
+  - drupal:field
+  - drupal:options
+
+'interface translation project': isced_field
+'interface translation server pattern': 'public://translations/isced_field.compiled.%language.po'

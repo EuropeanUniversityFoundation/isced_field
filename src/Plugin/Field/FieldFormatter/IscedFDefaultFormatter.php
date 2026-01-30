@@ -68,10 +68,12 @@ final class IscedFDefaultFormatter extends FormatterBase {
 
     foreach ($items as $delta => $item) {
       $code = $item->value;
+      // phpcs:ignore Drupal.Semantics.FunctionT.NotLiteralString
+      $label_translation = $this->t($labeled_list[$code]);
       $element[$delta] = [
         '#markup' => ($this->getSetting('prefix'))
-          ? implode(self::SEPARATOR, [$code, $labeled_list[$code]])
-          : $labeled_list[$code],
+          ? implode(self::SEPARATOR, [$code, $label_translation])
+          : $label_translation,
       ];
     }
     return $element;
