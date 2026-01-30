@@ -2,9 +2,11 @@
 
 namespace Drupal\isced_field\Plugin\views\filter;
 
+use Drupal\Core\Database\Query\Condition;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\views\Attribute\ViewsFilter;
 use Drupal\views\Plugin\views\filter\InOperator;
+use Drupal\views\Plugin\views\query\Sql;
 use Isced\IscedFieldsOfStudy;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -15,13 +17,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 #[ViewsFilter("isced")]
 class IscedFilter extends InOperator implements ContainerFactoryPluginInterface {
-
-  /**
-   * The entity field manager service.
-   *
-   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
-   */
-  protected $entityFieldManager;
 
   /**
    * The ISCED-F service.
@@ -75,6 +70,83 @@ class IscedFilter extends InOperator implements ContainerFactoryPluginInterface 
     $this->valueOptions = $options;
 
     return $this->valueOptions;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function query() {
+    if (!$this->query instanceof Sql) {
+      return;
+    }
+
+    $this->ensureMyTable();
+    if (empty(array_filter((array) $this->value))) {
+      return;
+    }
+
+    $grouped = $this->getGroupedValues();
+
+    $or_group = new Condition('OR');
+
+    foreach ($grouped as $level => $values) {
+      if (!empty($values)) {
+        $column = implode('_', [$this->configuration['field_name'], $level]);
+        $operator = (count($values) === 1) ? '=' : 'IN';
+        $or_group->condition("$this->tableAlias.$column", $values, $operator);
+      }
+    }
+
+    if ($or_group->count() > 0) {
+      $this->query->addWhere($this->options['group'], $or_group);
+    }
+  }
+
+  /**
+   * Returns the input values grouped by broad, narrow and detailed.
+   */
+  protected function getGroupedValues(): array {
+    $broad = [];
+    $narrow = [];
+    $detailed = [];
+
+    foreach ($this->value as $value) {
+      if ($this->isced->exists($value)) {
+        if ($this->isced->isBroad($value)) {
+          $broad[] = $value;
+        }
+        if ($this->isced->isNarrow($value)) {
+          $narrow[] = $value;
+        }
+        if ($this->isced->isDetailed($value)) {
+          $detailed[] = $value;
+        }
+      }
+    }
+
+    $values = ['broad' => array_unique(array_filter($broad))];
+
+    $values['narrow'] = [];
+
+    foreach (array_unique(array_filter($narrow)) as $narrow_item) {
+      $broad_item = $this->isced->getBroad($narrow_item);
+      if (!in_array($broad_item, $values['broad'])) {
+        $values['narrow'][] = $narrow_item;
+      }
+    }
+
+    foreach (array_unique(array_filter($detailed)) as $detailed_item) {
+      $broad_item = $this->isced->getBroad($detailed_item);
+      $narrow_item = $this->isced->getNarrow($detailed_item);
+      if (
+        !in_array($broad_item, $values['broad'])
+        && !in_array($narrow_item, $values['narrow'])
+      ) {
+        $values['detailed'][] = $detailed_item;
+      }
+    }
+
+    return $values;
   }
 
 }
